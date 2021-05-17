@@ -28,14 +28,14 @@
   public class UserContact
   {
     [Required]
-    [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
+    [StringLength(30, ErrorMessage = "Name length can't be more than 30.")]
     public string FullName { get; set; }
 
     [Required]
     [EmailAddress]
     public string Email { get; set; }
 
-    [StringLength(10, ErrorMessage = "Please use 300 characters or less")]
+    [StringLength(100, ErrorMessage = "Please use 100 characters or less")]
     public string Message { get; set; }
   }
 

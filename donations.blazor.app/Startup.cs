@@ -27,7 +27,8 @@ namespace donations.blazor.app
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddRazorPages();
-      services.AddServerSideBlazor();
+      services.AddServerSideBlazor().AddHubOptions(config => config.MaximumReceiveMessageSize = 1048576);
+
       services.AddSingleton<WeatherForecastService>();
 
       services.AddMudServices();
