@@ -1,5 +1,134 @@
-﻿<h3>Donations</h3>
+﻿<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+  <MudGrid Justify="Justify.Center" style="max-width:600px; border:1">
+      <MudItem xs="12">
+          <MudText class="mud-theme-primary py-4 px-6 mx-4 rounded-t-xl" Align="Align.Center">Donations</MudText>
+      </MudItem>
+      <MudItem xs="2">
+      </MudItem>
+      <MudItem xs="4">
+        <MudItem>
+          <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.ControlPoint" Size="Size.Large" IconSize="Size.Small" Label="R 100" Class="ma-2" />  
+        </MudItem>
+      </MudItem>
+      <MudItem xs="4">
+        <MudItem>
+          <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.ControlPoint" Size="Size.Large" IconSize="Size.Small" Label="R 500" Class="ma-2" />  
+        </MudItem>
+      </MudItem>
+      <MudItem xs="2">
+      </MudItem>
+
+      <MudItem xs="2">
+      </MudItem>
+      <MudItem xs="4">
+        <MudItem>
+          <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.ControlPoint" Size="Size.Large" IconSize="Size.Small" Label="R 250" Class="ma-2" />  
+        </MudItem>
+      </MudItem>
+      <MudItem xs="4">
+        <MudItem>
+          <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.ControlPoint" Size="Size.Large" IconSize="Size.Small" Label="R1000" Class="ma-2" />  
+        </MudItem>
+      </MudItem>
+      <MudItem xs="2">
+      </MudItem>
+
+      <MudItem xs="2">
+      </MudItem>
+      <MudItem xs="8">
+        <MudTextField Label="Amount" HelperText="Custom amount"
+                      @bind-Value="model.Amount" For="@(() => model.Amount)"  
+                      Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentText="R" />
+        <br />
+        <MudTextField Label="Message" HelperText="Leave an appreciation message"
+                      @bind-Value="model.Message" For="@(() => model.Message)" 
+                      Variant="Variant.Outlined" Text="" Lines="3" />
+      </MudItem>
+      <MudItem xs="2">
+      </MudItem>
+
+      <MudItem xs="5">
+      </MudItem>
+      <MudItem xs="3">
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Secondary" Class="d-flex align-center justify-center">DONATE</MudButton>
+      </MudItem>
+      <MudItem xs="4">
+      </MudItem>
+
+  </MudGrid>
+</EditForm>
+<!--
+  <MudGrid Justify="Justify.Center">
+    <MudItem xs="12" style="max-width: 600px">
+      <MudText class="mud-theme-primary py-4 px-6 mx-4 rounded-t-xl" Align="Align.Center">Donations</MudText>
+    </MudItem>
+  </MudGrid>    
+  <MudGrid Justify="Justify.Center">
+    <MudItem xs="12">
+      <EditForm Model="@model" OnValidSubmit="OnValidSubmit" Class="d-flex justify-center" style="max-width: 600px">
+        <DataAnnotationsValidator />
+        <MudCard xs="12">
+          <MudCardContent>
+            <MudGrid Justify="Justify.Center">
+              <MudItem xs="12">
+                  <MudGrid Spacing="2">
+                    <MudItem xs="3"></MudItem>
+                    <MudItem xs="3">
+                      <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" IconSize="Size.Large" Label="R 100" Class="ma-2" />  
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" IconSize="Size.Large" Label="R 500" Class="ma-2" />
+                    </MudItem>
+                    <MudItem xs="3"></MudItem>
+                  </MudGrid>
+              </MudItem>
+              <MudItem xs="12">
+                  <MudGrid Spacing="2">
+                    <MudItem xs="3"></MudItem>
+                    <MudItem xs="3">
+                      <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" IconSize="Size.Large" Label="R 250" Class="ma-2" />  
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" IconSize="Size.Large" Label="R1000" Class="ma-2" />
+                    </MudItem>
+                    <MudItem xs="3"></MudItem>
+                  </MudGrid>          </MudItem>
+              <MudItem xs="12">
+                  <MudGrid Spacing="2">
+                    <MudItem xs="12">
+                      <MudTextField Label="Name"
+                                    @bind-Value="model.Amount" For="@(() => model.Amount)"
+                                    Variant="Variant.Outlined" Text="" Lines="1" /> <br />
+
+                      <MudTextField Label="Message" HelperText="Leave an appreciation message"
+                                    @bind-Value="model.Message" For="@(() => model.Message)" 
+                                    Variant="Variant.Outlined" Text="" Lines="3" />
+                    </MudItem>
+                  </MudGrid>
+              </MudItem>
+            </MudGrid>
+          </MudCardContent>
+        </MudCard>
+      </EditForm>
+    </MudItem>
+</MudGrid>
+-->
 
 @code {
+  bool success = false;
+  Donation model = new Donation();
+
+  public class Donation
+  {
+    public decimal Amount { get; set; }
+    public string Message { get; set; }
+
+  }
+
+  private void OnValidSubmit(EditContext context)
+  {
+    success = true;
+    StateHasChanged();
+  }
 
 }
