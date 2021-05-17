@@ -5,12 +5,17 @@
     <DataAnnotationsValidator />
     <MudCard>
       <MudCardContent>
-        <MudTextField Label="Name" HelperText="Full Name"
-                      @bind-Value="model.FullName" For="@(() => model.FullName)" />
-        <MudTextField Label="Email" HelperText="Email" Class="mt-3"
-                      @bind-Value="model.Email" For="@(() => model.Email)" />
-        <MudTextField Label="Message" HelperText="Message" Class="mt-3"
-                      @bind-Value="model.Message" For="@(() => model.Message)" Variant="Variant.Text" Text="" Lines="2" />
+        <MudTextField Label="Name"
+                      @bind-Value="model.FullName" For="@(() => model.FullName)"
+                      Variant="Variant.Outlined" Text="" Lines="1" /> <br />
+
+        <MudTextField Label="Email"
+                      @bind-Value="model.Email" For="@(() => model.Email)"
+                      Variant="Variant.Outlined" Text="" Lines="1" /><br />
+
+        <MudTextField Label="Message"
+                      @bind-Value="model.Message" For="@(() => model.Message)" 
+                      Variant="Variant.Outlined" Text="" Lines="2" />
       </MudCardContent>
       <MudCardActions>
         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
