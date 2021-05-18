@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using donations.blazor.app.Data;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MudBlazor.Services;
+using Serilog;
+using Serilog.Events;
+using Serilog.Exceptions;
 
 namespace donations.blazor.app
 {
@@ -18,6 +16,16 @@ namespace donations.blazor.app
     public Startup(IConfiguration configuration)
     {
       Configuration = configuration;
+
+      var loggerConfiguration = new LoggerConfiguration()
+          .MinimumLevel.Is(LogEventLevel.Information)
+          .Enrich.FromLogContext()
+          .Enrich.WithExceptionDetails()
+          .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+          .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+          .MinimumLevel.Override("System", LogEventLevel.Warning);
+
+      Log.Logger = loggerConfiguration.CreateLogger();
     }
 
     public IConfiguration Configuration { get; }
@@ -29,7 +37,9 @@ namespace donations.blazor.app
       services.AddRazorPages();
       services.AddServerSideBlazor().AddHubOptions(config => config.MaximumReceiveMessageSize = 1048576);
 
-      services.AddSingleton<WeatherForecastService>();
+      services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
+
+      services.AddTransient<IPayfastService, PayfastService>();
 
       services.AddMudServices();
     }
@@ -45,6 +55,8 @@ namespace donations.blazor.app
       {
         app.UseExceptionHandler("/Error");
       }
+
+      app.UseCors(Configuration);
 
       app.UseStaticFiles();
 
