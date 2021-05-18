@@ -4,6 +4,6 @@ namespace donations.blazor.app.Data
 {
   public interface IPayfastService
   {
-    Task SubmitPayment();
+    Task SubmitPayment(decimal donationAmount);
   }
 }

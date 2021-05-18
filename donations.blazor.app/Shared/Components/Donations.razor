@@ -1,9 +1,10 @@
 ﻿<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
   <DataAnnotationsValidator />
-  <MudGrid Justify="Justify.Center" style="max-width:600px; border:1">
+  <MudGrid Justify="Justify.Center" style="max-width:600px; border:1px solid #000000">
       <MudItem xs="12">
           <MudText class="mud-theme-primary py-4 px-6 mx-4 rounded-t-xl" Align="Align.Center">Donations</MudText>
       </MudItem>
+
       <MudItem xs="2">
       </MudItem>
       <MudItem xs="4">
@@ -80,11 +81,14 @@
   {
     model.Amount = amount;
   }
+
   private void OnValidSubmit(EditContext context)
   {
     success = true;
     var amount = model.Amount;
     var message = model.Message;
+
+    
 
     StateHasChanged();
   }
