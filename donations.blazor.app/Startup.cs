@@ -41,6 +41,8 @@ namespace donations.blazor.app
 
       services.AddTransient<IPayfastService, PayfastService>();
 
+      services.AddCors();
+
       services.AddMudServices();
     }
 

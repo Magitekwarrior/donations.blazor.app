@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using donations.blazor.app.Data.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using donations.blazor.app.Data.Config;
 
 namespace donations.blazor.app
 {
