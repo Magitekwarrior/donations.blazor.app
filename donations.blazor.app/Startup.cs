@@ -10,6 +10,7 @@ using MudBlazor.Services;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
+using System;
 
 namespace donations.blazor.app
 {
@@ -43,10 +44,11 @@ namespace donations.blazor.app
 
       services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
       services.Configure<ServicesEndpoints>(Configuration.GetSection("ServicesEndpoints"));
+      services.AddHttpClient("Donations", x => { x.BaseAddress = new Uri("http://localhost:5000"); });
 
       services.AddTransient<IPayfastService, PayfastService>();
 
-     // services.AddCors();
+      services.AddCors();
 
       services.AddMudServices();
     }
@@ -63,7 +65,7 @@ namespace donations.blazor.app
         app.UseExceptionHandler("/Error");
       }
 
-      //app.UseCors(Configuration);
+      app.UseCors(Configuration);
 
       app.UseStaticFiles();
 

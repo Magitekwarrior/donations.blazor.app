@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace donations.blazor.app.Data.Services
@@ -17,15 +18,24 @@ namespace donations.blazor.app.Data.Services
   {
     private readonly AppSettings _appSettings;
     private readonly ServicesEndpoints _servicesEndpoints;
-
-    public PayfastService(IOptions<AppSettings> appSettings, IOptions<ServicesEndpoints> servicesEndpoints)
+    private readonly IHttpClientFactory _httpClientFactory;
+    
+    public PayfastService(IOptions<AppSettings> appSettings, 
+      IOptions<ServicesEndpoints> servicesEndpoints,
+      IHttpClientFactory httpClientFactory)
     {
       _appSettings = appSettings.Value;
       _servicesEndpoints = servicesEndpoints.Value;
+      _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
     }
 
     public async Task<bool> SubmitPayment(decimal donationAmount)
     {
+      var httpClient = _httpClientFactory.CreateClient();
+      httpClient.BaseAddress = new Uri(_servicesEndpoints.Services["Payfast"].Url);
+      httpClient.Timeout = new TimeSpan(0, 0, 30);
+      httpClient.DefaultRequestHeaders.Clear();
+
       Payment payfastPayment = new Payment()
       {
         merchant_id = _appSettings.MerchantId,
@@ -48,15 +58,20 @@ namespace donations.blazor.app.Data.Services
         };
 
         HttpContent content = new FormUrlEncodedContent(form);
-        var result = await url.AllowAnyHttpStatus().PostUrlEncodedAsync(new
-        {
-          merchant_id = payfastPayment.merchant_id,
-          merchant_key = payfastPayment.merchant_key,
-          amount = payfastPayment.amount,
-          item_name = payfastPayment.item_name
-        });
+        var result = httpClient.PostAsync(url, content);
 
-        if (result.StatusCode == (int)HttpStatusCode.OK)
+        //var result = await url.AllowAnyHttpStatus().PostAsync(content);
+        //var result = await url.AllowAnyHttpStatus().PostUrlEncodedAsync(new
+        //{
+        //  payfastPayment.merchant_id,
+        //  payfastPayment.merchant_key,
+        //  payfastPayment.amount,
+        //  payfastPayment.item_name
+        //});
+
+        //if (result.StatusCode == (int)HttpStatusCode.OK)
+
+        if (result.Result.StatusCode == HttpStatusCode.OK)
           return true;
 
       }

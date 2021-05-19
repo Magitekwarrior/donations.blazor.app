@@ -1,5 +1,5 @@
 ﻿@using donations.blazor.app.Data.Services.Contracts
-@*@inject IDialogService DialogService*@
+@inject IDialogService DialogService
 @inject IPayfastService payfastService
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
@@ -50,9 +50,6 @@
                     @bind-Value="model.Amount" For="@(() => model.Amount)"
                     Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentText="R" />
       <br />
-      <MudTextField Label="Message" HelperText="Leave an appreciation message"
-                    @bind-Value="model.Message" For="@(() => model.Message)"
-                    Variant="Variant.Outlined" Text="" Lines="3" />
     </MudItem>
     <MudItem xs="2">
     </MudItem>
@@ -81,6 +78,7 @@
 
 @code {
   bool paymentSubmitted = false;
+
   Donation model = new Donation();
 
   public class Donation
@@ -96,6 +94,8 @@
 
   private void OnValidSubmit(EditContext context)
   {
+    // StateHasChanged();
+
     var amount = model.Amount;
     var message = model.Message;
 
@@ -104,12 +104,18 @@
       paymentSubmitted = payfastService.SubmitPayment(amount).Result;
     }
 
-    //if (paymentSubmitted)
-    //{
-    //  DialogService.ShowMessageBox("Donation Payment Successful", "Thank you very much. Your generous donation is very much appreciated.");
-    //}
+    if (paymentSubmitted)
+    {
+      var parameters = new DialogParameters();
+      parameters.Add("ContentText", "Thank you for your generous donation. It is greatly appreciated.");
+      parameters.Add("ButtonText", "OK");
+      parameters.Add("Color", Color.Success);
 
-    StateHasChanged();
+      DialogService.Show<MessageDialog>("Donation Payment Successful", parameters);
+
+      model.Amount = 0;
+    }
+
   }
 
 }
