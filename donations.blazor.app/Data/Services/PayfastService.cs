@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace donations.blazor.app.Data.Services
@@ -19,8 +20,8 @@ namespace donations.blazor.app.Data.Services
     private readonly AppSettings _appSettings;
     private readonly ServicesEndpoints _servicesEndpoints;
     private readonly IHttpClientFactory _httpClientFactory;
-    
-    public PayfastService(IOptions<AppSettings> appSettings, 
+
+    public PayfastService(IOptions<AppSettings> appSettings,
       IOptions<ServicesEndpoints> servicesEndpoints,
       IHttpClientFactory httpClientFactory)
     {
@@ -29,7 +30,22 @@ namespace donations.blazor.app.Data.Services
       _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
     }
 
-    public async Task<bool> SubmitPayment(decimal donationAmount)
+    public async Task<Merchant> GetPaymentDetails()
+    {
+      Merchant merchant = new Merchant()
+      {
+        merchant_id = _appSettings.MerchantId,
+        merchant_key = _appSettings.MerchantKey,
+        item_name = _appSettings.ItemName,         
+        cancel_url = _appSettings.ReturnUrl,
+        notify_url = _appSettings.NotifyUrl,
+        return_url = _appSettings.ReturnUrl
+      };
+
+      return merchant;
+    }
+
+    public async Task<HttpResponseMessage> SubmitPayment(decimal donationAmount)
     {
       var httpClient = _httpClientFactory.CreateClient();
       httpClient.BaseAddress = new Uri(_servicesEndpoints.Services["Payfast"].Url);
@@ -57,8 +73,17 @@ namespace donations.blazor.app.Data.Services
           KeyValuePair.Create("item_name", payfastPayment.item_name)
         };
 
-        HttpContent content = new FormUrlEncodedContent(form);
-        var result = httpClient.PostAsync(url, content);
+        //HttpContent content = new FormUrlEncodedContent(form);
+        //var result = await httpClient.PostAsync(url, content);
+
+        var jsonContent = JsonConvert.SerializeObject(payfastPayment);
+        StringContent postData = new StringContent(jsonContent, Encoding.UTF8, "application/x-www-form-urlencoded");
+        using (HttpResponseMessage result = httpClient.PostAsync(url, postData).Result)
+        {
+          string resultJson = result.Content.ReadAsStringAsync().Result;
+
+          return result;
+        }
 
         //var result = await url.AllowAnyHttpStatus().PostAsync(content);
         //var result = await url.AllowAnyHttpStatus().PostUrlEncodedAsync(new
@@ -69,10 +94,8 @@ namespace donations.blazor.app.Data.Services
         //  payfastPayment.item_name
         //});
 
-        //if (result.StatusCode == (int)HttpStatusCode.OK)
-
-        if (result.Result.StatusCode == HttpStatusCode.OK)
-          return true;
+        //if (result.StatusCode == HttpStatusCode.OK)
+        //  return result;
 
       }
       catch (Exception ex)
@@ -89,7 +112,7 @@ namespace donations.blazor.app.Data.Services
       //  Log.Error($"Error returned from {ex.Call.Request.Url}: {ex.InnerException}");
       //}
 
-      return false;
+      return new HttpResponseMessage();
     }
 
   }

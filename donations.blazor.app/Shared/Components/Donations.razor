@@ -1,6 +1,21 @@
 ﻿@using donations.blazor.app.Data.Services.Contracts
+@using Microsoft.AspNetCore.WebUtilities
 @inject IDialogService DialogService
 @inject IPayfastService payfastService
+@inject NavigationManager UriHelper
+@inject IJSRuntime JS
+
+
+<!--<form action="https://sandbox.payfast.co.za​/eng/process" method="post">
+  <input type="hidden" name="merchant_id" value="10000100">
+  <input type="hidden" name="merchant_key" value="46f0cd694581a">
+  <input type="hidden" name="amount" value="@model.Amount">
+  <input type="hidden" name="item_name" value="Test Product">-->
+@*<input type="submit">*@
+<!--</form>-->
+
+@inject NavigationManager NavManager
+
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
   <DataAnnotationsValidator />
@@ -94,28 +109,50 @@
 
   private void OnValidSubmit(EditContext context)
   {
-    // StateHasChanged();
-
     var amount = model.Amount;
     var message = model.Message;
 
+    //HttpResponseMessage result = new HttpResponseMessage();
     if (amount > 0)
     {
-      paymentSubmitted = payfastService.SubmitPayment(amount).Result;
+      //result = payfastService.SubmitPayment(amount).Result;
+      var merchantDetails = payfastService.GetPaymentDetails().Result;
+
+      var query = new Dictionary<string, string>
+      {
+        { "merchant_id", merchantDetails.merchant_id.ToString() },
+        { "merchant_key", merchantDetails.merchant_key },
+        { "amount", amount.ToString() },
+        { "item_name", merchantDetails.item_name },
+        { "return_url", merchantDetails.return_url },
+        { "cancel_url", merchantDetails.cancel_url },
+        { "notify_url", merchantDetails.notify_url }
+      };
+
+      UriHelper.NavigateTo(QueryHelpers.AddQueryString("https://sandbox.payfast.co.za​/eng/process", query), forceLoad: true);
+
+      //UriHelper.NavigateTo(QueryHelpers.AddQueryString("https://sandbox.payfast.co.za​/eng/process", query));
+
+      //var uri = UriHelper.ToAbsoluteUri(UriHelper.Uri);
+
+      //if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("Id", out var param))
+      //{
+      //  Id = param.First();
+      //}
     }
 
-    if (paymentSubmitted)
-    {
-      var parameters = new DialogParameters();
-      parameters.Add("ContentText", "Thank you for your generous donation. It is greatly appreciated.");
-      parameters.Add("ButtonText", "OK");
-      parameters.Add("Color", Color.Success);
+    //if (paymentSubmitted)
+    //{
+    //  //var parameters = new DialogParameters();
+    //  //parameters.Add("ContentText", result.Content); //"Thank you for your generous donation. It is greatly appreciated.");
+    //  //parameters.Add("ButtonText", "OK");
+    //  //parameters.Add("Color", Color.Success);
+    //  //DialogService.Show<MessageDialog>("Donation Payment Successful", parameters);
 
-      DialogService.Show<MessageDialog>("Donation Payment Successful", parameters);
+    //  model.Amount = 0;
+    //}
 
-      model.Amount = 0;
-    }
+    StateHasChanged();
 
   }
-
 }

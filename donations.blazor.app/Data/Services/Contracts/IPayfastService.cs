@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using donations.blazor.app.Data.Models;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace donations.blazor.app.Data.Services.Contracts
 {
   public interface IPayfastService
   {
-    Task<bool> SubmitPayment(decimal donationAmount);
+    Task<HttpResponseMessage> SubmitPayment(decimal donationAmount);
+    Task<Merchant> GetPaymentDetails();
   }
 }
