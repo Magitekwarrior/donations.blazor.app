@@ -1,4 +1,6 @@
-using donations.blazor.app.Data;
+using donations.blazor.app.Data.Config;
+using donations.blazor.app.Data.Services;
+using donations.blazor.app.Data.Services.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -39,9 +41,12 @@ namespace donations.blazor.app
 
       services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 
+      services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+      services.Configure<ServicesEndpoints>(Configuration.GetSection("ServicesEndpoints"));
+
       services.AddTransient<IPayfastService, PayfastService>();
 
-      services.AddCors();
+     // services.AddCors();
 
       services.AddMudServices();
     }
@@ -58,7 +63,7 @@ namespace donations.blazor.app
         app.UseExceptionHandler("/Error");
       }
 
-      app.UseCors(Configuration);
+      //app.UseCors(Configuration);
 
       app.UseStaticFiles();
 
